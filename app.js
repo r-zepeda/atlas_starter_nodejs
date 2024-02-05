@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 async function run() {
   const uri =
@@ -13,33 +13,19 @@ async function run() {
   const database = client.db(dbName);
   const collection = database.collection(collectionName);
 
-  // const customers = [
-  //   {
-  //     name: "Ralph",
-  //     lastName: "Zepeda",
-  //     contactNo: "09291387410",
-  //     acUnits: [
-  //       {
-  //         dateInstalled: new Date(),
-  //         brand: "Daikin",
-  //         model: "queen",
-  //         hp: 1.5,
-  //         assignedTechnician: "Mark",
-  //       },
-  //     ],
-  //     paid: false,
-  //   },
-  // ];
+  const findCustomerQuery = { _id: ObjectId("65bf7a28ce029024d459549e") };
 
-  const findRalph = { name: "Ralph" };
-  const projection = { name: true, _id: false };
+  try {
+    const findCustomer = await collection.findOne(findCustomerQuery);
+    console.log(
+      `${findCustomer.name} ${findCustomer.lastName} \nUserId: ${findCustomer._id}`
+    );
 
-  collection.find(findRalph, projection).toArray((err, result) => {
-    if (err) throw err;
+    const customerId = findCustomer._id;
+  } catch (err) {
+    console.log(err);
+  }
 
-    console.log(result);
-
-    client.close();
-  });
+  await client.close();
 }
 run().catch(console.dir);
